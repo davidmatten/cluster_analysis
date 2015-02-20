@@ -14,8 +14,8 @@ def infiles_to_dict(infile, biomeasures):
     df2 = pd.io.parsers.read_csv(biomeasures, sep="\t")
     bio_ids = list(df2["seq_id"])
     intersection = list(set(bio_ids) & set(infile_ids))
-    print "OMITTING: " + str(list( set(bio_ids) - set(infile_ids)))
-    print "OMITTING: " + str(list( set(infile_ids) - set(bio_ids)))
+#    print "OMITTING: " + str(list( set(bio_ids) - set(infile_ids)))
+#    print "OMITTING: " + str(list( set(infile_ids) - set(bio_ids)))
 
     for id in intersection:
         data[id] = {"seq":None, "vl":None, "cd4":None}
@@ -73,7 +73,8 @@ def make_test_list(data, pos, col):
             d[residue].append(v[col])
     return d
 
-def main(infile, biomeasures, outfile):
+def main(infile, biomeasures):
+    outfile = "analysis_outfile.csv"
     data = infiles_to_dict(infile, biomeasures)
     cons_seq = get_cons_seq(infile)
 
@@ -127,7 +128,7 @@ def main(infile, biomeasures, outfile):
             fh.write(",".join([str(x) for x in outline])+"\n")
 
     fh.close()
-    print "end."
+ #   print "end."
 
 
 
@@ -137,13 +138,10 @@ if __name__ == "__main__":
             help='The path to the tab delimited aligned protein sequence files. eg: "/path/to/sequences/files.txt"', required=True)
     parser.add_argument('-bio', '--biomeasures', type=str,
             help="The path to the tab delimited file containing biological measurements of the associated protein sequences in the sequences file.", required=True)
-    parser.add_argument('-outf', '--outfile', type=str,
-                        help = 'Path (including file name) to where outfile will be generated.', required=True)
     args = parser.parse_args()
     
     seqs = args.sequences
     biomeasures = args.biomeasures
-    outfile = args.outfile
 
     if (seqs is None) or (biomeasures is None) or (outfile is None):
         print "Please specify all required arguments. infile, bio measures, outfile"
@@ -156,5 +154,5 @@ if __name__ == "__main__":
         print "Please supply a valid path to the bio measures source files"
         sys.exit()
 
-    main(seqs, biomeasures, outfile)
+    main(seqs, biomeasures)
 
